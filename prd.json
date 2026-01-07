@@ -14,7 +14,7 @@
         "Supports GHL_TOKEN and GHL_LOCATION_ID env vars",
         "MCP endpoint: https://services.leadconnectorhq.com/mcp/"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "2",
