@@ -27,7 +27,7 @@
         "ghl auth --show to check status",
         "Config stored in ~/.config/ghl/config.json"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "3",
@@ -41,7 +41,7 @@
         "ghl contacts tag <id> <tags...>",
         "Pretty table output"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "4",
@@ -53,7 +53,7 @@
         "ghl conversations messages <id>",
         "ghl conversations send <id> <message>"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "5",
@@ -64,7 +64,7 @@
         "ghl calendar events",
         "ghl calendar notes <appointmentId>"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "6",
@@ -77,7 +77,7 @@
         "ghl opportunities get <id>",
         "ghl opportunities update <id> --stage --value"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "7",
@@ -88,7 +88,7 @@
         "ghl payments transactions",
         "ghl payments order <id>"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "8",
@@ -99,7 +99,7 @@
         "ghl location",
         "ghl location fields"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
