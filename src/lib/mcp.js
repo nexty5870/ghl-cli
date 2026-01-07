@@ -36,6 +36,7 @@ export class GHLClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream",
         "Authorization": `Bearer ${this.token}`,
         "locationId": this.locationId
       },
@@ -47,13 +48,53 @@ export class GHLClient {
       throw new Error(`GHL MCP error (${response.status}): ${text}`);
     }
 
+    // Handle SSE or JSON response
+    const contentType = response.headers.get("content-type") || "";
+    
+    if (contentType.includes("text/event-stream")) {
+      // Parse SSE response
+      const text = await response.text();
+      const lines = text.split("\n");
+      let result = null;
+      
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.result) result = data.result;
+            if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          } catch (e) {
+            if (e.message.includes("JSON")) continue; // Skip non-JSON lines
+            throw e;
+          }
+        }
+      }
+      
+      if (result?.content?.[0]?.text) {
+        try {
+          return JSON.parse(result.content[0].text);
+        } catch {
+          return result.content[0].text;
+        }
+      }
+      return result;
+    }
+
     const data = await response.json();
     
     if (data.error) {
       throw new Error(`MCP error: ${data.error.message || JSON.stringify(data.error)}`);
     }
 
-    return data.result?.content?.[0]?.text ? JSON.parse(data.result.content[0].text) : data.result;
+    if (data.result?.content?.[0]?.text) {
+      try {
+        return JSON.parse(data.result.content[0].text);
+      } catch {
+        return data.result.content[0].text;
+      }
+    }
+    
+    return data.result;
   }
 
   // Contacts

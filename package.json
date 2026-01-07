@@ -1,6 +1,6 @@
 {
   "name": "ghl-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI for GoHighLevel CRM via MCP",
   "type": "module",
   "bin": {
