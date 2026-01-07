@@ -466,7 +466,7 @@ location
       const client = createClient();
       const loc = await client.getLocation();
       
-      console.log(chalk.cyan(`\n🏢 Location: ${loc.name || "Unnamed"}\n`));
+      console.log(chalk.cyan(`\n🏢 Location: ${loc.name || loc.business?.name || "Unnamed"}\n`));
       console.log(chalk.white(`  ID:       ${loc.id}`));
       console.log(chalk.white(`  Email:    ${loc.email || "-"}`));
       console.log(chalk.white(`  Phone:    ${loc.phone || "-"}`));

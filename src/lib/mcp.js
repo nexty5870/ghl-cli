@@ -20,8 +20,21 @@ export class GHLClient {
     }
   }
 
+  extractData(obj) {
+    // Unwrap nested content structures until we get to the actual data
+    if (obj?.content?.[0]?.text) {
+      try {
+        const inner = JSON.parse(obj.content[0].text);
+        return this.extractData(inner);
+      } catch {
+        return obj.content[0].text;
+      }
+    }
+    if (obj?.data) return obj.data;
+    return obj;
+  }
+
   async callTool(toolName, args = {}) {
-    // MCP uses JSON-RPC style requests
     const request = {
       jsonrpc: "2.0",
       id: Date.now(),
@@ -48,53 +61,40 @@ export class GHLClient {
       throw new Error(`GHL MCP error (${response.status}): ${text}`);
     }
 
-    // Handle SSE or JSON response
     const contentType = response.headers.get("content-type") || "";
     
+    // Handle SSE response
     if (contentType.includes("text/event-stream")) {
-      // Parse SSE response
       const text = await response.text();
       const lines = text.split("\n");
-      let result = null;
       
       for (const line of lines) {
         if (line.startsWith("data: ")) {
           try {
             const data = JSON.parse(line.slice(6));
-            if (data.result) result = data.result;
-            if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+            if (data.error) {
+              throw new Error(data.error.message || JSON.stringify(data.error));
+            }
+            if (data.result) {
+              return this.extractData(data.result);
+            }
           } catch (e) {
-            if (e.message.includes("JSON")) continue; // Skip non-JSON lines
+            if (e.message.includes("Unexpected")) continue; // Skip non-JSON
             throw e;
           }
         }
       }
-      
-      if (result?.content?.[0]?.text) {
-        try {
-          return JSON.parse(result.content[0].text);
-        } catch {
-          return result.content[0].text;
-        }
-      }
-      return result;
+      return null;
     }
 
+    // Handle JSON response
     const data = await response.json();
     
     if (data.error) {
       throw new Error(`MCP error: ${data.error.message || JSON.stringify(data.error)}`);
     }
 
-    if (data.result?.content?.[0]?.text) {
-      try {
-        return JSON.parse(data.result.content[0].text);
-      } catch {
-        return data.result.content[0].text;
-      }
-    }
-    
-    return data.result;
+    return this.extractData(data.result);
   }
 
   // Contacts
@@ -103,11 +103,13 @@ export class GHLClient {
   }
 
   async getContact(contactId) {
-    return this.callTool("contacts_get-contact", { contactId });
+    const result = await this.callTool("contacts_get-contact", { contactId });
+    return result?.contact || result;
   }
 
   async createContact(data) {
-    return this.callTool("contacts_create-contact", data);
+    const result = await this.callTool("contacts_create-contact", data);
+    return result?.contact || result;
   }
 
   async updateContact(contactId, data) {
@@ -162,7 +164,8 @@ export class GHLClient {
   }
 
   async getOpportunity(opportunityId) {
-    return this.callTool("opportunities_get-opportunity", { id: opportunityId });
+    const result = await this.callTool("opportunities_get-opportunity", { id: opportunityId });
+    return result?.opportunity || result;
   }
 
   async updateOpportunity(opportunityId, data) {
@@ -175,12 +178,14 @@ export class GHLClient {
   }
 
   async getOrder(orderId) {
-    return this.callTool("payments_get-order-by-id", { orderId });
+    const result = await this.callTool("payments_get-order-by-id", { orderId });
+    return result?.order || result;
   }
 
   // Location
   async getLocation() {
-    return this.callTool("locations_get-location", { locationId: this.locationId });
+    const result = await this.callTool("locations_get-location", { locationId: this.locationId });
+    return result?.location || result;
   }
 
   async getCustomFields() {
