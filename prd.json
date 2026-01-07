@@ -1,0 +1,105 @@
+{
+  "project": "ghl-cli",
+  "branchName": "feat/cli",
+  "description": "CLI for GoHighLevel CRM - contacts, conversations, calendar, opportunities, payments",
+  "stories": [
+    {
+      "id": "1",
+      "title": "Project setup and MCP client",
+      "description": "Create package.json, MCP client that communicates with GHL MCP server",
+      "priority": 1,
+      "acceptance": [
+        "package.json with ghl as bin",
+        "src/lib/mcp.js with GHLClient class",
+        "Supports GHL_TOKEN and GHL_LOCATION_ID env vars",
+        "MCP endpoint: https://services.leadconnectorhq.com/mcp/"
+      ],
+      "passes": false
+    },
+    {
+      "id": "2",
+      "title": "CLI scaffold with auth command",
+      "description": "Set up CLI with commander.js, auth command for token setup",
+      "priority": 2,
+      "acceptance": [
+        "ghl --help shows all commands",
+        "ghl auth for interactive setup",
+        "ghl auth --show to check status",
+        "Config stored in ~/.config/ghl/config.json"
+      ],
+      "passes": false
+    },
+    {
+      "id": "3",
+      "title": "Contacts commands",
+      "description": "List, get, create, update contacts",
+      "priority": 3,
+      "acceptance": [
+        "ghl contacts list",
+        "ghl contacts get <id>",
+        "ghl contacts create --name --email --phone",
+        "ghl contacts tag <id> <tags...>",
+        "Pretty table output"
+      ],
+      "passes": false
+    },
+    {
+      "id": "4",
+      "title": "Conversations commands",
+      "description": "Search conversations, get messages, send messages",
+      "priority": 4,
+      "acceptance": [
+        "ghl conversations search <query>",
+        "ghl conversations messages <id>",
+        "ghl conversations send <id> <message>"
+      ],
+      "passes": false
+    },
+    {
+      "id": "5",
+      "title": "Calendar commands",
+      "description": "List calendar events, view appointment notes",
+      "priority": 5,
+      "acceptance": [
+        "ghl calendar events",
+        "ghl calendar notes <appointmentId>"
+      ],
+      "passes": false
+    },
+    {
+      "id": "6",
+      "title": "Opportunities commands",
+      "description": "List pipelines, search/view/update opportunities",
+      "priority": 6,
+      "acceptance": [
+        "ghl opportunities pipelines",
+        "ghl opportunities search <query>",
+        "ghl opportunities get <id>",
+        "ghl opportunities update <id> --stage --value"
+      ],
+      "passes": false
+    },
+    {
+      "id": "7",
+      "title": "Payments commands",
+      "description": "List transactions, get order details",
+      "priority": 7,
+      "acceptance": [
+        "ghl payments transactions",
+        "ghl payments order <id>"
+      ],
+      "passes": false
+    },
+    {
+      "id": "8",
+      "title": "Location command",
+      "description": "Get location details and custom fields",
+      "priority": 8,
+      "acceptance": [
+        "ghl location",
+        "ghl location fields"
+      ],
+      "passes": false
+    }
+  ]
+}
